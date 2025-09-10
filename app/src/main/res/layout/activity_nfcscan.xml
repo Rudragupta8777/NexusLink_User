@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bg"
+    tools:context=".NFCScan">
+
+    <TextView
+        android:id="@+id/topic"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Link Your ID Card"
+        android:textAlignment="center"
+        android:layout_marginTop="60dp"
+        android:textColor="@color/black"
+        android:textSize="32sp"
+        android:textStyle="bold"
+        android:typeface="serif"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/nfc_Scan"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="48dp"
+        android:scaleX="0.8"
+        android:scaleY="0.8"
+        android:src="@drawable/nfcscan"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.466"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/topic" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/textView"
+        android:layout_width="324dp"
+        android:layout_height="93dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="24dp"
+        android:layout_marginEnd="20dp"
+        android:text="Hold your NFC-enabled student ID card near the back of your phone. This is how you'll share your profile with companies."
+        android:textAlignment="center"
+        android:textColor="@color/textColor"
+        android:textSize="18sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.492"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/nfc_Scan" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/scanButton"
+        android:layout_width="match_parent"
+        android:layout_height="55dp"
+        android:enabled="false"
+        android:layout_marginStart="20dp"
+        android:textColor="@color/white"
+        android:textSize="18sp"
+        app:cornerRadius="12dp"
+        android:layout_marginEnd="20dp"
+        android:backgroundTint="@color/black"
+        android:layout_marginBottom="40dp"
+        android:text="Scanning"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"/>
+</androidx.constraintlayout.widget.ConstraintLayout>
