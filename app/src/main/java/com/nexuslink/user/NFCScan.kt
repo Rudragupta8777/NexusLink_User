@@ -166,6 +166,7 @@ class NFCScan : AppCompatActivity() {
         handler.post(runnable)
     }
 
+    // In NFCScan.kt, modify the onCardDetected function:
     private fun onCardDetected(uid: String) {
         scanning = false
         handler.removeCallbacks(runnable)
@@ -173,8 +174,9 @@ class NFCScan : AppCompatActivity() {
         scanButton.text = "Continue"
         scanButton.isEnabled = true
         scanButton.setOnClickListener {
-            val intent = Intent(this, UserDetails::class.java)
-            intent.putExtra("card_uid", uid)
+            val intent = Intent(this, ProfileSetupActivity::class.java).apply {
+                putExtra("card_uid", uid)
+            }
             startActivity(intent)
         }
     }
