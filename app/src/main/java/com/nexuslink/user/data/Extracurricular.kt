@@ -1,7 +1,7 @@
 package com.nexuslink.user.data
 
 data class Extracurricular(
-    val role: String = "",
-    val organization: String = "",
-    val description: String = ""
+    var role: String = "",
+    var organization: String = "",
+    var description: String = ""
 )

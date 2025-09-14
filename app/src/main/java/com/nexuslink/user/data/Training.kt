@@ -1,8 +1,11 @@
 package com.nexuslink.user.data
 
+import java.util.Date
+
 data class Training(
-    val title: String = "",
-    val issuer: String = "",
-    val date: String = "",
-    val description: String = ""
+    var title: String = "",
+    var issuer: String = "",
+    var date: Date? = null,
+    var description: String = ""
 )
+

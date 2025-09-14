@@ -1,113 +1,116 @@
 package com.nexuslink.user
 
-import android.os.Build
+import android.content.Intent
 import android.os.Bundle
-import android.widget.TextView
+import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.button.MaterialButton
 import com.nexuslink.user.Adapter.EducationAdapter
-import com.nexuslink.user.data.Education
+import com.nexuslink.user.Adapter.WorkExperienceAdapter
+import com.nexuslink.user.Adapter.SkillsAdapter
 import com.nexuslink.user.data.StudentProfile
+import com.nexuslink.user.databinding.ActivityProfileReviewBinding
+import com.nexuslink.user.network.ApiService
+import com.nexuslink.user.network.RetrofitInstance
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 class ProfileReviewActivity : AppCompatActivity() {
-    private lateinit var profile: StudentProfile
-    private lateinit var educationAdapter: EducationAdapter
-    private lateinit var nameTextView: TextView
-    private lateinit var emailTextView: TextView
-    private lateinit var phoneTextView: TextView
-    private lateinit var locationTextView: TextView
-    private lateinit var educationRecyclerView: RecyclerView
-    private lateinit var saveButton: MaterialButton
+
+    private lateinit var binding: ActivityProfileReviewBinding
+    private lateinit var apiService: ApiService
+    private var authToken: String? = null
+
+    companion object {
+        private const val TAG = "ProfileReviewActivity"
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_profile_review)
+        binding = ActivityProfileReviewBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
-        // Initialize views directly without view binding
-        nameTextView = findViewById(R.id.nameTextView)
-        emailTextView = findViewById(R.id.emailTextView)
-        phoneTextView = findViewById(R.id.phoneTextView)
-        locationTextView = findViewById(R.id.locationTextView)
-        educationRecyclerView = findViewById(R.id.educationRecyclerView)
-        saveButton = findViewById(R.id.saveButton)
+        apiService = RetrofitInstance.api
+        authToken = intent.getStringExtra("token")
 
-        // Get profile from intent (for now, we'll create a dummy profile)
-        profile = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            intent.getParcelableExtra("profile", StudentProfile::class.java) ?: createDummyProfile()
-        } else {
-            @Suppress("DEPRECATION")
-            intent.getParcelableExtra("profile") ?: createDummyProfile()
+        if (authToken.isNullOrEmpty()) {
+            Toast.makeText(this, "Authentication token is missing.", Toast.LENGTH_SHORT).show()
+            finish()
+            return
         }
 
         setupRecyclerViews()
-        populateData()
-        setupSaveButton()
-    }
+        fetchProfileData()
 
-    private fun createDummyProfile(): StudentProfile {
-        // Create a dummy profile for testing
-        return StudentProfile(
-            name = "John Doe",
-            email = "john.doe@example.com",
-            phone = "+1 234-567-8900",
-            location = "New York, NY",
-            education = mutableListOf(
-                Education(
-                    degree = "Bachelor of Computer Science",
-                    institution = "Tech University",
-                    startYear = 2020,
-                    endYear = 2024
-                )
-            ),
-            workExperience = mutableListOf(),
-            projects = mutableListOf(),
-            skills = mutableListOf("Kotlin", "Java", "Android Development")
-        )
+        binding.editButton.setOnClickListener {
+            val intent = Intent(this, ProfileSetupActivity::class.java).apply {
+                putExtra("token", authToken)
+            }
+            startActivity(intent)
+            finish()
+        }
+
+        binding.saveButton.setOnClickListener {
+            Toast.makeText(this, "Profile saved successfully!", Toast.LENGTH_SHORT).show()
+            // Here you can navigate to the main dashboard or finish the activity
+            finish()
+        }
     }
 
     private fun setupRecyclerViews() {
-        // Education RecyclerView
-        educationAdapter = EducationAdapter(profile.education)
-        educationRecyclerView.apply {
-            layoutManager = LinearLayoutManager(this@ProfileReviewActivity)
-            adapter = educationAdapter
+        binding.educationRecyclerView.layoutManager = LinearLayoutManager(this)
+        binding.educationRecyclerView.adapter = EducationAdapter(emptyList())
+
+        binding.experienceRecyclerView.layoutManager = LinearLayoutManager(this)
+        binding.experienceRecyclerView.adapter = WorkExperienceAdapter(emptyList())
+
+        binding.skillsRecyclerView.layoutManager = LinearLayoutManager(this)
+        binding.skillsRecyclerView.adapter = SkillsAdapter(emptyList())
+    }
+
+    private fun fetchProfileData() {
+        val bearerToken = if (authToken!!.startsWith("Bearer ")) {
+            authToken!!
+        } else {
+            "Bearer $authToken"
         }
 
-        // TODO: Initialize other RecyclerViews for experience, projects, skills
+        apiService.getProfile(bearerToken).enqueue(object : Callback<StudentProfile> {
+            override fun onResponse(call: Call<StudentProfile>, response: Response<StudentProfile>) {
+                if (response.isSuccessful) {
+                    val profile = response.body()
+                    profile?.let {
+                        updateUI(it)
+                    } ?: run {
+                        Toast.makeText(this@ProfileReviewActivity, "Failed to load profile data.", Toast.LENGTH_SHORT).show()
+                    }
+                } else {
+                    val errorBody = response.errorBody()?.string() ?: "Unknown error"
+                    Log.e(TAG, "Failed to fetch profile: $errorBody")
+                    Toast.makeText(this@ProfileReviewActivity, "Failed to load profile.", Toast.LENGTH_SHORT).show()
+                }
+            }
+
+            override fun onFailure(call: Call<StudentProfile>, t: Throwable) {
+                Log.e(TAG, "Network error fetching profile", t)
+                Toast.makeText(this@ProfileReviewActivity, "Network error: ${t.message}", Toast.LENGTH_SHORT).show()
+            }
+        })
     }
 
-    private fun populateData() {
-        nameTextView.text = profile.name
-        emailTextView.text = profile.email
-        phoneTextView.text = profile.phone
-        locationTextView.text = profile.location
+    private fun updateUI(profile: StudentProfile) {
+        // Update basic info
+        binding.nameTextView.text = profile.name ?: "N/A"
+        binding.emailTextView.text = profile.email ?: "N/A"
+        binding.phoneTextView.text = profile.phone ?: "N/A"
+        binding.locationTextView.text = profile.location ?: "N/A"
+        binding.careerObjectiveTextView.text = profile.careerObjective ?: "N/A"
 
-        // Set up edit listeners
-        nameTextView.setOnClickListener { showEditDialog("Name", profile.name) { profile.name = it } }
-        emailTextView.setOnClickListener { showEditDialog("Email", profile.email) { profile.email = it } }
-        phoneTextView.setOnClickListener { showEditDialog("Phone", profile.phone) { profile.phone = it } }
-        locationTextView.setOnClickListener { showEditDialog("Location", profile.location) { profile.location = it } }
-    }
-
-    private fun showEditDialog(title: String, currentValue: String, onSave: (String) -> Unit) {
-        // Implement a dialog for editing fields
-        // You can use MaterialAlertDialogBuilder or create a custom dialog
-        Toast.makeText(this, "Edit $title functionality to be implemented", Toast.LENGTH_SHORT).show()
-    }
-
-    private fun setupSaveButton() {
-        saveButton.setOnClickListener {
-            // Update profile with edited data
-            profile.education = educationAdapter.getItems()
-
-            // Save profile locally or send to backend
-            Toast.makeText(this, "Profile saved successfully!", Toast.LENGTH_SHORT).show()
-
-            // Navigate to next screen or finish
-            finish()
-        }
+        // Update RecyclerViews
+        (binding.educationRecyclerView.adapter as EducationAdapter).updateData(profile.education)
+        (binding.experienceRecyclerView.adapter as WorkExperienceAdapter).updateData(profile.workExperience)
+        (binding.skillsRecyclerView.adapter as SkillsAdapter).updateData(profile.skills)
     }
 }

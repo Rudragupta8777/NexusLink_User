@@ -28,7 +28,6 @@
             android:layout_marginBottom="32dp"
             android:lineSpacingMultiplier="1.2"/>
 
-        <!-- Basic Info Section -->
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -90,7 +89,6 @@
             </LinearLayout>
         </androidx.cardview.widget.CardView>
 
-        <!-- Education Section -->
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -105,7 +103,6 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="24dp"/>
 
-        <!-- Experience Section -->
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -120,7 +117,6 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="24dp"/>
 
-        <!-- Projects Section -->
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -135,7 +131,6 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="24dp"/>
 
-        <!-- Skills Section -->
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -149,6 +144,37 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="32dp"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Career Objective"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="16dp"/>
+
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="24dp"
+            app:cardElevation="4dp">
+
+            <TextView
+                android:id="@+id/careerObjectiveTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="16dp"
+                android:text="Career objective will appear here"
+                android:textSize="14sp"/>
+        </androidx.cardview.widget.CardView>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/editButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Edit Profile"
+            android:layout_marginBottom="16dp"
+            style="@style/Widget.Material3.Button.OutlinedButton"/>
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/saveButton"

@@ -1,8 +1,8 @@
 package com.nexuslink.user.data
 
 data class Accomplishment(
-    val title: String = "",
-    val issuer: String = "",
-    val description: String = "",
-    val link: String = ""
+    var title: String = "",
+    var issuer: String = "",
+    var description: String = "",
+    var link: String = ""
 )

@@ -1,13 +1,10 @@
 package com.nexuslink.user.data
 
-import android.os.Parcelable
-import kotlinx.parcelize.Parcelize
-
-@Parcelize
 data class Project(
-    val title: String = "",
-    val duration: String = "",
-    val link: String = "",
-    val techStack: List<String> = emptyList(),
-    val description: String = ""
-) : Parcelable
+    var title: String = "",
+    var duration: String = "",
+    var link: String = "",
+    var techStack: List<String> = emptyList(),
+    var description: String = ""
+)
+

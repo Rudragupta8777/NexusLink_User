@@ -27,6 +27,12 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import com.google.android.material.button.MaterialButton
+import com.nexuslink.user.data.AttachIdRequest
+import com.nexuslink.user.data.LoginResponse
+import com.nexuslink.user.network.RetrofitInstance
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 class NFCScan : AppCompatActivity() {
 
@@ -173,13 +179,34 @@ class NFCScan : AppCompatActivity() {
 
         scanButton.text = "Continue"
         scanButton.isEnabled = true
+
         scanButton.setOnClickListener {
-            val intent = Intent(this, ProfileSetupActivity::class.java).apply {
-                putExtra("card_uid", uid)
-            }
-            startActivity(intent)
+            val token = intent.getStringExtra("token") ?: return@setOnClickListener
+            sendUidToBackend(uid, token)
         }
     }
+
+    private fun sendUidToBackend(uid: String, token: String) {
+        RetrofitInstance.api.attachId(token, AttachIdRequest(uid))
+            .enqueue(object : Callback<LoginResponse> {
+                override fun onResponse(call: Call<LoginResponse>, response: Response<LoginResponse>) {
+                    if (response.isSuccessful && response.body()?.success == true) {
+                        Toast.makeText(this@NFCScan, "ID attached successfully", Toast.LENGTH_SHORT).show()
+                        val intent = Intent(this@NFCScan, ProfileSetupActivity::class.java)
+                        intent.putExtra("card_uid", uid)
+                        intent.putExtra("token", token)
+                        startActivity(intent)
+                    } else {
+                        Toast.makeText(this@NFCScan, "Failed to attach ID", Toast.LENGTH_SHORT).show()
+                    }
+                }
+
+                override fun onFailure(call: Call<LoginResponse>, t: Throwable) {
+                    Toast.makeText(this@NFCScan, "Network error: ${t.message}", Toast.LENGTH_SHORT).show()
+                }
+            })
+    }
+
 
     override fun onResume() {
         super.onResume()
