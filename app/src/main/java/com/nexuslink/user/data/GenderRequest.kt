@@ -1,4 +1,4 @@
-package com.nexuslink.user.network
+package com.nexuslink.user.data
 
 data class GenderRequest(
     val gender: String

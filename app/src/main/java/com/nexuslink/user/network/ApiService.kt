@@ -1,6 +1,7 @@
 package com.nexuslink.user.network
 
 import com.nexuslink.user.data.AttachIdRequest
+import com.nexuslink.user.data.GenderRequest
 import com.nexuslink.user.data.LoginResponse
 import com.nexuslink.user.data.StudentProfile
 import retrofit2.Call
